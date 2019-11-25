@@ -15,7 +15,7 @@ import './local/index'
 Vue.use(VeeValidate)
 // method1 to zh-cn
 // Validator.localize('zh-CN', zh)
-console.log('1111')
+console.log('111')
 // method2 to zh-cn
 const validator = new Validator()
 validator.localize('zh-CN')
