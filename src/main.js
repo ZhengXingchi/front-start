@@ -16,6 +16,7 @@ Vue.use(VeeValidate)
 // method1 to zh-cn
 // Validator.localize('zh-CN', zh)
 
+
 // method2 to zh-cn
 const validator = new Validator()
 validator.localize('zh-CN')
