@@ -1,5 +1,4 @@
 import axios from '@/utils/request'
-
 /**
  * 获取验证码接口
  * @param {*} sid 唯一标识
