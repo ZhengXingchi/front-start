@@ -3,11 +3,11 @@
     <div class="layui-form-item">
       <div class="avatar-add">
         <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过50KB</p>
-        <button type="button"
-                class="layui-btn upload-img">
+        <label for="pic" class="layui-btn upload-img">
           <i class="layui-icon">&#xe67c;</i>上传头像
-        </button>
-        <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+          <input id="pic" type="file" name="file" accept="image/png,image/gif,image/jpg" @change="upload">
+        </label>
+        <img :src="pic">
         <span class="loading"></span>
       </div>
     </div>
@@ -15,10 +15,41 @@
 </template>
 
 <script>
+import { uploadImg } from '@/api/content'
 export default {
-  name: 'pic-upload'
+  name: 'pic-upload',
+  data () {
+    return {
+      pic: (this.$store.state.userInfo && this.$store.state.userInfo.pic) ? this.$store.state.userInfo.pic : '/img/bear.jpeg',
+      formData: ''
+    }
+  },
+  methods: {
+    upload (e) {
+      console.log(e.target.files)
+      let file = e.target.files
+      let formData = new FormData()
+      if (file.length > 0) {
+        formData.append('file', file[0])
+        this.formData = formData
+      }
+      uploadImg(this.formData).then(res => {
+        // updateUserInfo({pic:this.pic}).then(res)=>{
+        //  if(res.code===200){
+        //    let user=this.$store.state.userInfo
+        //    user.pic=this.pic
+        //    this.$store.commit('setUserInfo',user)
+        //    this.$alert('图片上传成功')
+        //  }
+        // }
+      })
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
+#pic{
+  display: none;
+}
 </style>
