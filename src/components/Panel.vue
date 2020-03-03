@@ -19,10 +19,10 @@
 
             <div class="fly-column-right layui-hide-xs">
                 <span class="fly-search"><i class="layui-icon"></i></span>
-                <a href="jie/add.html" class="layui-btn">发表新帖</a>
+                <router-link :to="{'name':'add'}" class="layui-btn">发表新帖</router-link>
             </div>
             <div class="layui-hide-sm layui-show-xs-block" style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
-                <a href="jie/add.html" class="layui-btn">发表新帖</a>
+                <router-link :to="{'name':'add'}" class="layui-btn">发表新帖</router-link>
             </div>
         </div>
     </div>
@@ -30,45 +30,45 @@
 
 <script>
 export default {
-  name: 'panel',
-  data () {
+  name: "panel",
+  data() {
     return {
       lists: [
         {
-          name: '提问',
-          path: '/index/ask',
+          name: "提问",
+          path: "/index/ask",
           isNew: false
         },
         {
-          name: '分享',
-          path: '/index/share',
+          name: "分享",
+          path: "/index/share",
           isNew: true
         },
         {
-          name: '讨论',
-          path: '/index/discuss',
+          name: "讨论",
+          path: "/index/discuss",
           isNew: false
         },
         {
-          name: '建议',
-          path: '/index/advice',
+          name: "建议",
+          path: "/index/advice",
           isNew: false
         },
         {
-          name: '公告',
-          path: '/index/notice',
+          name: "公告",
+          path: "/index/notice",
           isNew: false
         },
         {
-          name: '公告',
-          path: '/index/logs',
+          name: "公告",
+          path: "/index/logs",
           isNew: false
         }
       ],
       isLogin: this.$store.state.isLogin
-    }
+    };
   }
-}
+};
 </script>
 <style lang="scss" scoped>
 </style>

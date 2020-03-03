@@ -6,20 +6,21 @@
   </div>
 </template>
 <script>
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
+import Header from "@/components/Header.vue";
+import Footer from "@/components/Footer.vue";
 export default {
-  name: 'app',
+  name: "app",
   components: {
-    'imooc-header': Header,
-    'imooc-footer': Footer
+    "imooc-header": Header,
+    "imooc-footer": Footer
   }
-}
+};
 </script>
 
 <style lang="scss">
 // @import "assets/layui/css/layui.css";
 @import "assets/css/global.css";
+@import "assets/css/layui-layer/layer.css";
 // @import "assets/layui/css/modules/layer/default/layer.css";
 
 // 公用样式
@@ -47,6 +48,9 @@ export default {
   .pr#{$i} {
     padding-right: $i * 10 + px !important;
   }
+  .pt#{$i} {
+    padding-top: $i * 10 + px !important;
+  }
   .mr#{$i} {
     margin-right: $i * 10 + px !important;
   }
@@ -71,5 +75,19 @@ export default {
 }
 .pull-right {
   float: right !important;
+}
+.d-flex {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  &.flex-start {
+    justify-content: flex-start;
+  }
+  &.flex-end {
+    justify-content: flex-end;
+  }
+  &.flex-center {
+    justify-content: center;
+  }
 }
 </style>

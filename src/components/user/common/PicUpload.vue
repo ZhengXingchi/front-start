@@ -16,6 +16,8 @@
 
 <script>
 import { uploadImg } from '@/api/content'
+import config from '@/config'
+import { updateUserInfo } from '@/api/user'
 export default {
   name: 'pic-upload',
   data () {
@@ -26,22 +28,29 @@ export default {
   },
   methods: {
     upload (e) {
-      console.log(e.target.files)
+      console.log('TCL: upload -> e', e)
       let file = e.target.files
       let formData = new FormData()
       if (file.length > 0) {
         formData.append('file', file[0])
         this.formData = formData
       }
-      uploadImg(this.formData).then(res => {
-        // updateUserInfo({pic:this.pic}).then(res)=>{
-        //  if(res.code===200){
-        //    let user=this.$store.state.userInfo
-        //    user.pic=this.pic
-        //    this.$store.commit('setUserInfo',user)
-        //    this.$alert('图片上传成功')
-        //  }
-        // }
+      // 上传图片的之后 -> uploadImg
+      uploadImg(formData).then((res) => {
+        console.log('11111')
+        if (res.code === 200) {
+          const baseUrl = process.env.NODE_ENV === 'production' ? config.baseUrl.pro : config.baseUrl.dev
+          this.pic = baseUrl + res.data
+          updateUserInfo({ pic: this.pic }).then(res => {
+            if (res.code === 200) {
+              let user = this.$store.state.userInfo
+              user.pic = this.pic
+              this.$store.commit('setUserInfo', user)
+              this.$alert('图片上传成功')
+            }
+          })
+          document.getElementById('pic').value = ''
+        }
       })
     }
   }

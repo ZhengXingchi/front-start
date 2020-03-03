@@ -61,8 +61,11 @@
 
 <script>
 import _ from 'lodash'
-import moment from 'moment'
-import 'moment/locale/zh-cn'
+// import moment from 'dayjs'
+// import relativeTime from 'dayjs/plugin/relativeTime'
+// import 'dayjs/locale/zh-cn'
+// moment.extend(relativeTime)
+// import 'moment/locale/zh-cn'
 export default {
   name: 'listItem',
   // props: ['lists'],
@@ -78,15 +81,6 @@ export default {
     isEnd: {
       default: false,
       type: Boolean
-    }
-  },
-  filters: {
-    moment (date) {
-      if (moment(date).isBefore(moment().subtract(7, 'days'))) {
-        return moment(date).format('YYYY-MM-DD')
-      } else {
-        return moment(date).from(moment())
-      }
     }
   },
   methods: {

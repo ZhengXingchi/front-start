@@ -1,13 +1,14 @@
-import { extend, localize } from 'vee-validate'
-import { required, email, min, length, confirmed, max } from 'vee-validate/dist/rules'
-import zh from 'vee-validate/dist/locale/zh_CN.json'
 /*eslint-disable */
+import { extend, localize } from 'vee-validate'
+import { required, email, min, length, confirmed, max, is_not } from 'vee-validate/dist/rules'
+import zh from 'vee-validate/dist/locale/zh_CN.json'
 extend('email', email)
 extend('min', min)
 extend('required', required)
 extend('length', length)
 extend('confirmed', confirmed)
 extend('max', max)
+extend('is_not', is_not)
 
 // Custom validate
 extend('name', {
@@ -32,7 +33,10 @@ localize('zh_CN', {
     password: '密码',
     name: '昵称',
     username: '账号',
-    code: '验证码'
+    code: '验证码',
+    oldpassword: '旧密码',
+    title: '标题',
+    catalog: '分类'
   },
   // 针对不同的name，定义不同的message消息
   fields: {
@@ -44,6 +48,14 @@ localize('zh_CN', {
       min: (field, { length }) => {
         return `请在${field}输入至少${length}个字符`
       }
+    },
+    password: {
+      confirmed: (field, { length }) => {
+        return `两次输入的${field}不一致`
+      }
+    },
+    catalog: {
+      is_not: '请选择{_field_}'
     }
   }
 })

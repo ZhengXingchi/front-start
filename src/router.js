@@ -25,6 +25,8 @@ const MyCollection = () => import(/* webpackChunkName: 'my-collection' */ './com
 const NotFound = () => import(/* webpackChunkName: 'notfound' */ './views/NotFound.vue')
 const Confirm = () => import(/* webpackChunkName: 'confirm' */ './views/Confirm.vue')
 const Reset = () => import(/* webpackChunkName: 'reset' */ './views/Reset.vue')
+const Add = () => import(/* webpackChunkName: 'add' */ './components/contents/Add.vue')
+const Detail = () => import(/* webpackChunkName: 'detail' */ './components/contents/Detail.vue')
 
 Vue.use(Router)
 
@@ -75,7 +77,20 @@ const router = new Router({
       path: '/forget',
       name: 'forget',
       component: Forget
-    }, {
+    },
+    {
+      path: '/add',
+      meta: { requireAuth: true },
+      name: 'add',
+      component: Add
+    },
+    {
+      path: '/detail/:tid',
+      name: 'detail',
+      props: true,
+      component: Detail
+    },
+    {
       path: '/user',
       name: 'home',
       props: true,

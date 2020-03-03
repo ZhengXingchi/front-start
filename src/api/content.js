@@ -15,11 +15,21 @@ const getTop = options => {
   return axios.get('/public/topweek?' + qs.stringify(options))
 }
 // 图片上传接口
-const uploadImage = (formData) => axios.post('content/upload', formData)
+const uploadImg = formData => {
+  console.log('tttt', formData)
+  return axios.post('/content/upload', formData)
+}
+// 发帖接口
+const addPost = (data) => axios.post('/content/add', { ...data })
+
+// 获取文章详情
+const getDetail = (tid) => axios.get('/public/content/detail?tid=' + tid)
 export {
   getLists,
   getTips,
   getLinks,
   getTop,
-  uploadImage
+  uploadImg,
+  addPost,
+  getDetail
 }
