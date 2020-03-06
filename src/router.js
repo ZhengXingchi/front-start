@@ -26,6 +26,7 @@ const NotFound = () => import(/* webpackChunkName: 'notfound' */ './views/NotFou
 const Confirm = () => import(/* webpackChunkName: 'confirm' */ './views/Confirm.vue')
 const Reset = () => import(/* webpackChunkName: 'reset' */ './views/Reset.vue')
 const Add = () => import(/* webpackChunkName: 'add' */ './components/contents/Add.vue')
+const Edit = () => import(/* webpackChunkName: 'edit' */ './components/contents/Edit.vue')
 const Detail = () => import(/* webpackChunkName: 'detail' */ './components/contents/Detail.vue')
 
 Vue.use(Router)
@@ -83,6 +84,13 @@ const router = new Router({
       meta: { requireAuth: true },
       name: 'add',
       component: Add
+    },
+    {
+      path: '/edit/:tid',
+      props: true,
+      meta: { requireAuth: true },
+      name: 'edit',
+      component: Edit
     },
     {
       path: '/detail/:tid',

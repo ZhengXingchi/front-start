@@ -89,7 +89,11 @@
             </div>
           </div>
           <div class="layui-btn-container fly-detail-admin pt1">
-            <a href class="layui-btn layui-btn-sm jie-admin">编辑</a>
+            <router-link
+              class="layui-btn layui-btn-sm jie-admin"
+              :to="{name:'edit',params:{tid:tid,page:page}}"
+              v-show="page.isEnd === '0'"
+            >编辑</router-link>
             <a href class="layui-btn layui-btn-sm jie-admin jie-admin-collection">收藏</a>
           </div>
           <div class="detail-body photos" v-html="content"></div>
@@ -133,11 +137,16 @@
               </div>
               <div class="detail-body jieda-body photos" v-richtext="item.content"></div>
               <div class="jieda-reply">
-                <span class="jieda-zan" :class="{'zanok':item.handed === '1'}" type="zan">
+                <span
+                  class="jieda-zan"
+                  :class="{'zanok':item.handed === '1'}"
+                  type="zan"
+                  @click="hands(item)"
+                >
                   <i class="iconfont icon-zan"></i>
                   <em>{{item.hands}}</em>
                 </span>
-                <span type="reply">
+                <span type="reply" @click="reply(item)">
                   <i class="iconfont icon-svgmoban53"></i>
                   回复
                 </span>
@@ -161,8 +170,10 @@
             <li class="fly-none" v-if="comments.length===0">消灭零回复</li>
           </ul>
           <Pagination
+            v-show="comments.length && total > 0"
             :showType="'icon'"
-            :hasSelect="true"
+            :hasSelect="false"
+            :hasTotal="false"
             :total="total"
             :size="size"
             :current="current"
@@ -221,7 +232,13 @@
 
 <script>
 import { getDetail } from "@/api/content";
-import { getComments, addComment } from "@/api/comments";
+import {
+  getComments,
+  addComment,
+  updateComment,
+  setCommentBest,
+  setHands
+} from "@/api/comments";
 import HotList from "@/components/sidebar/HotList";
 import Ads from "@/components/sidebar/Ads";
 import Links from "@/components/sidebar/Links";
@@ -265,19 +282,67 @@ export default {
     this.getCommentsList();
   },
   methods: {
+    hands(item) {
+      setHands({
+        cid: item.id
+      }).then(res => {
+        console.log("res", res);
+        if (res.code === 200) {
+          this.$pop("", "点赞成功");
+          item.handed = "1";
+          item.hands += 1;
+        } else {
+          this.$pop("shake", res.msg);
+        }
+      });
+    },
+    reply(item) {
+      console.log("item", item);
+      const reg = /^@[\S]+/g;
+      if (this.editInfo.content) {
+        if (reg.test(this.editInfo.content)) {
+          this.editInfo.content = this.editInfo.content.replace(
+            reg,
+            "@" + item.cuid.name + " "
+          );
+        } else if (this.editInfo.content !== "") {
+          this.editInfo.content =
+            "@" + item.cuid.name + " " + this.editInfo.content;
+        }
+      } else {
+        this.editInfo.content = "@" + item.cuid.name + " ";
+      }
+      // 动态滚动到输入框的位置，并且进行focus
+      scrollToElem(".layui-form-block", 1000, -65);
+      document.getElementById("edit").focus();
+    },
     editComent(item) {
       console.log("editComent", item);
-      this.editInfo.content = item.content
-      scrollToElem('.layui-form-block',1000,-65)
-      document.getElementById('edit').focus()
+      this.editInfo.content = item.content;
+      // 动态滚动到输入框的位置并且focus
+      scrollToElem(".layui-form-block", 1000, -65);
+      document.getElementById("edit").focus();
+      this.editInfo.cid = item._id;
+      this.editInfo.item = item;
     },
-    setBest(item) {
+    setBest(item, index) {
       console.log("setBest", item, index);
-      this.$confirm('确定采纳为最佳答案吗？',()=>{
-
-      },()=>{
-
-      })
+      this.$confirm(
+        "确定采纳为最佳答案吗？",
+        () => {
+          setCommentBest({
+            cid: item._id,
+            tid: this.tid
+          }).then(res => {
+            if (res.code === 200) {
+              this.$pop("", "设置最佳答案成功");
+              item.isBest = "1";
+              this.page.isEnd = "1";
+            }
+          });
+        },
+        () => {}
+      );
     },
     handleChange(val) {
       this.current = val;
@@ -321,21 +386,61 @@ export default {
         this.$pop("shake", "请先登录");
         return;
       }
+      const user = this.$store.state.userInfo;
+      if (user.status !== "0") {
+        this.$pop("shake", "用户已经禁言，请联系管理员");
+        return;
+      }
       this.editInfo.code = this.code;
       this.editInfo.sid = this.$store.state.sid;
       this.editInfo.tid = this.tid;
+      // 获取评论用户的信息：图片、昵称、vip
+      const cuid = {
+        _id: user._id,
+        pic: user.pic,
+        name: user.name,
+        isVip: user.isVip
+      };
+      if (
+        typeof this.editInfo.cid !== "undefined" &&
+        this.editInfo.cid !== ""
+      ) {
+        const obj = { ...this.editInfo };
+        delete obj["item"];
+        // 判断用户是否修改了内容
+        if (this.editInfo.content === this.editInfo.item.content) {
+          this.$pop("shake", "确定编辑了内容~~~");
+          return;
+        }
+        // 更新评论
+        updateComment(obj).then(res => {
+          if (res.code === 200) {
+            const temp = this.editInfo.item;
+            temp.content = this.editInfo.content;
+            this.$pop("", "更新评论成功");
+            this.code = "";
+            this.editInfo.content = "";
+            // 方法一，只用更新特定的一条的content created， $set
+            // 方法二，更新整个数组中的这一条
+            this.comments.splice(
+              this.comments.indexOf(this.editInfo.item),
+              1,
+              temp
+            );
+            requestAnimationFrame(() => {
+              this.$refs.observer && this.$refs.observer.reset();
+            });
+            // 刷新图形验证码
+            this._getCode();
+          }
+        });
+        return;
+      }
       addComment(this.editInfo).then(res => {
         if (res.code === 200) {
           this.$pop("", "发表评论成功");
           this.code = "";
           this.editInfo.content = "";
-          const user = this.$store.state.userInfo;
-          const cuid = {
-            _id: user._id,
-            pic: user.pic,
-            name: user.name,
-            isVip: user.isVip
-          };
           res.data.cuid = cuid;
           this.comments.push(res.data);
           requestAnimationFrame(() => {
@@ -343,6 +448,8 @@ export default {
           });
           // 刷新图形验证码
           this._getCode();
+        } else {
+          this.$alert(res.msg);
         }
       });
     }
